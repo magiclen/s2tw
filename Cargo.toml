@@ -1,0 +1,25 @@
+[package]
+name = "s2tw"
+version = "1.0.1"
+authors = ["Magic Len <len@magiclen.org>"]
+repository = "https://github.com/magiclen/s2tw"
+homepage = "https://magiclen.org/s2tw"
+keywords = ["chinese", "traditional", "simple", "conversion"]
+categories = ["command-line-utilities"]
+description= "A simple tool for converting Simple Chinese to Traditional Chinese(TW)."
+readme = "README.md"
+license = "MIT"
+
+[badges]
+travis-ci = { repository = "magiclen/s2tw", branch = "master" }
+
+[profile.release]
+panic = "abort"
+
+[dependencies]
+clap = "2.32.0"
+path-absolutize = "1.1.1"
+
+[dependencies.opencc-rust]
+version = "1.0.5"
+features = ["static-dictionaries"]
