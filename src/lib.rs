@@ -122,18 +122,25 @@ pub fn run(config: Config) -> Result<i32, String> {
                 None => {
                     let parent = s_path.parent().unwrap();
 
-                    let file_stem = s_path.file_stem().unwrap().to_str().unwrap();
-                    let extension = s_path.extension().unwrap().to_str().unwrap();
+                    let file_stem = match s_path.file_stem() {
+                        Some(file_stem) => {
+                            let file_stem = file_stem.to_str().unwrap();
 
-                    let file_stem = if file_stem.ends_with(".chs") {
-                        &file_stem[..file_stem.len() - 4]
-                    } else {
-                        file_stem
+                            if file_stem.ends_with(".chs") {
+                                &file_stem[..file_stem.len() - 4]
+                            } else {
+                                file_stem
+                            }
+                        }
+                        None => ""
                     };
 
                     let file_stem = opencc.convert(&file_stem);
 
-                    let file_name = format!("{}.cht.{}", file_stem, extension);
+                    let file_name = match s_path.extension() {
+                        Some(extension) => format!("{}.cht.{}", file_stem, extension.to_str().unwrap()),
+                        None => format!("{}.cht", file_stem)
+                    };
 
                     Path::join(parent, file_name)
                 }

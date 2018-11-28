@@ -1,6 +1,6 @@
 [package]
 name = "s2tw"
-version = "1.0.1"
+version = "1.0.2"
 authors = ["Magic Len <len@magiclen.org>"]
 repository = "https://github.com/magiclen/s2tw"
 homepage = "https://magiclen.org/s2tw"
@@ -18,8 +18,8 @@ panic = "abort"
 
 [dependencies]
 clap = "2.32.0"
-path-absolutize = "1.1.1"
+path-absolutize = "1.1.3"
 
 [dependencies.opencc-rust]
-version = "1.0.5"
+version = "1.0.7"
 features = ["static-dictionaries"]
