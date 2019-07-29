@@ -8,19 +8,11 @@ rust:
 os:
   - linux
 
-env:
-  -
-  - FEATURES="static-dictionaries"
-
 install:
   - sudo apt update
   - sudo apt install doxygen cmake
   - git clone https://github.com/BYVoid/OpenCC.git && cd OpenCC
   - make PREFIX=/usr && sudo make PREFIX=/usr install
-
-script:
-  - if [ "$NO_DEFAULT_FEATURES" = "1" ]; then NO_DEFAULT_FEATURES="--no-default-features"; else NO_DEFAULT_FEATURES=""; fi
-  - cargo test --verbose $NO_DEFAULT_FEATURES --features "$FEATURES"
 
 matrix:
   include:
