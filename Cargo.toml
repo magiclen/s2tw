@@ -10,8 +10,9 @@ description= "A simple tool for converting Simple Chinese to Traditional Chinese
 readme = "README.md"
 license = "MIT"
 
-[badges]
-travis-ci = { repository = "magiclen/s2tw", branch = "master" }
+[badges.travis-ci]
+repository = "magiclen/s2tw"
+branch = "master"
 
 [profile.release]
 panic = "abort"
