@@ -118,6 +118,15 @@ fn main() -> Result<(), String> {
                 }
             };
 
+            if let Ok(metadata) = tw_path.metadata() {
+                if metadata.is_dir() || !force {
+                    return Err(format!(
+                        "`{}` exists!",
+                        tw_path.absolutize().map_err(|err| err.to_string())?.to_string_lossy()
+                    ));
+                }
+            }
+
             if tw_path.exists() && (tw_path.is_dir() || !force) {
                 return Err(format!(
                     "`{}` exists!",
