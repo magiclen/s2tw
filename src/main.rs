@@ -9,6 +9,7 @@ extern crate path_absolutize;
 
 extern crate s2tw;
 
+use std::borrow::Cow;
 use std::env;
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Write};
@@ -71,23 +72,19 @@ fn main() -> Result<(), String> {
 
     match s_path {
         Some(s_path) => {
-            let s_path = Path::new(s_path).absolutize().map_err(|err| err.to_string())?;
+            let s_path = Path::new(s_path);
 
-            let s_file = File::open(&s_path)
-                .map_err(|_| format!("Cannot open {}.", s_path.to_string_lossy()))?;
+            if s_path.is_dir() {
+                return Err(format!(
+                    "`{}` is a directory!",
+                    s_path.absolutize().map_err(|err| err.to_string())?.to_string_lossy()
+                ));
+            }
 
-            let (tw_path, mut tw_file) = match tw_path {
-                Some(tw_path) => {
-                    let tw_path = Path::new(tw_path).absolutize().map_err(|err| err.to_string())?;
+            let s_file = File::open(&s_path).map_err(|err| err.to_string())?;
 
-                    if tw_path.exists() && !force {
-                        return Err(format!("`{}` exists!", tw_path.to_string_lossy()));
-                    }
-
-                    let tw_file = File::create(tw_path.as_path()).map_err(|err| err.to_string())?;
-
-                    (tw_path, tw_file)
-                }
+            let tw_path = match tw_path {
+                Some(tw_path) => Cow::from(Path::new(tw_path)),
                 None => {
                     let parent = s_path.parent().unwrap();
 
@@ -117,11 +114,18 @@ fn main() -> Result<(), String> {
 
                     let tw_path = Path::join(parent, file_name);
 
-                    let tw_file = File::create(tw_path.as_path()).map_err(|err| err.to_string())?;
-
-                    (tw_path, tw_file)
+                    Cow::from(tw_path)
                 }
             };
+
+            if tw_path.exists() && (tw_path.is_dir() || !force) {
+                return Err(format!(
+                    "`{}` exists!",
+                    tw_path.absolutize().map_err(|err| err.to_string())?.to_string_lossy()
+                ));
+            }
+
+            let mut tw_file = File::create(tw_path.as_ref()).map_err(|err| err.to_string())?;
 
             let mut s_file = BufReader::new(s_file);
 
