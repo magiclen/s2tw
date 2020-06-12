@@ -68,7 +68,7 @@ fn main() -> Result<(), String> {
 
     let opencc = OpenCC::new(Path::join(&temporary_path, DefaultConfig::S2TWP))
         .map_err(|err| err.to_string())?;
-    assert_eq!("測試字串", opencc.convert("测试字符串"));
+    debug_assert_eq!("測試字串", opencc.convert("测试字符串"));
 
     match s_path {
         Some(s_path) => {

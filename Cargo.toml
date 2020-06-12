@@ -1,6 +1,6 @@
 [package]
 name = "s2tw"
-version = "1.0.6"
+version = "1.0.7"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 repository = "https://github.com/magiclen/s2tw"
