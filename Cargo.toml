@@ -10,6 +10,7 @@ categories = ["command-line-utilities"]
 description= "A simple tool for converting Simple Chinese to Traditional Chinese(TW)."
 readme = "README.md"
 license = "MIT"
+include = ["src/**/*", "Cargo.toml"]
 
 [badges.travis-ci]
 repository = "magiclen/s2tw"
