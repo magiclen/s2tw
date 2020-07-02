@@ -126,10 +126,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
             }
 
-            if tw_path.exists() && (tw_path.is_dir() || !force) {
-                return Err(format!("`{}` exists!", tw_path.absolutize()?.to_string_lossy()).into());
-            }
-
             let mut tw_file = File::create(tw_path.as_ref())?;
 
             let mut s_file = BufReader::new(s_file);
