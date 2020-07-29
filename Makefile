@@ -10,7 +10,7 @@ all: ./target/release/s2tw
 install:
 	$(MAKE)
 	sudo cp ./target/release/s2tw /usr/local/bin/s2tw
-	sudo chown root. /usr/local/bin/s2tw
+	sudo chown root: /usr/local/bin/s2tw
 	sudo chmod 0755 /usr/local/bin/s2tw
 	
 test:
