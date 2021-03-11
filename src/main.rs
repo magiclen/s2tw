@@ -94,11 +94,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                                 .to_str()
                                 .ok_or_else(|| String::from("Unsupported path."))?;
 
-                            if file_stem.ends_with(".chs") {
-                                &file_stem[..file_stem.len() - 4]
-                            } else {
-                                file_stem
-                            }
+                            file_stem.strip_suffix(".chs").unwrap_or(file_stem)
                         }
                         None => "",
                     };
