@@ -4,7 +4,7 @@ all: ./target/release/s2tw
 	PWD=$$(pwd)
 	cd $$OPENCC_PATH && bash build.sh
 	cd $$PWD
-	OPENCC_LIB_DIRS="$$OPENCC_PATH/linux/lib:$$OPENCC_PATH/OpenCC/Release/deps/marisa-0.2.5" OPENCC_INCLUDE_DIRS="$$OPENCC_PATH/linux/include/opencc" OPENCC_STATIC=1 OPENCC_LIBS=opencc:marisa OPENCC_DYLIB_STDCPP=1 cargo build --release
+	OPENCC_LIB_DIRS="$$OPENCC_PATH/linux/lib:$$OPENCC_PATH/OpenCC/Release/deps/marisa-0.2.6" OPENCC_INCLUDE_DIRS="$$OPENCC_PATH/linux/include/opencc" OPENCC_STATIC=1 OPENCC_LIBS=opencc:marisa OPENCC_DYLIB_STDCPP=1 cargo build --release
 	strip ./target/release/s2tw
 	
 install:
