@@ -1,7 +1,7 @@
 s2tw
 ====================
 
-[![Build Status](https://travis-ci.org/magiclen/s2tw.svg?branch=master)](https://travis-ci.org/magiclen/s2tw)
+[![CI](https://github.com/magiclen/s2tw/actions/workflows/ci.yml/badge.svg)](https://github.com/magiclen/s2tw/actions/workflows/ci.yml)
 
 A simple tool for converting Simple Chinese to Traditional Chinese(TW).
 

@@ -1,6 +1,6 @@
 [package]
 name = "s2tw"
-version = "1.0.11"
+version = "1.0.12"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2018"
 repository = "https://github.com/magiclen/s2tw"
@@ -11,10 +11,6 @@ description = "A simple tool for converting Simple Chinese to Traditional Chines
 readme = "README.md"
 license = "MIT"
 include = ["src/**/*", "Cargo.toml", "README.md", "LICENSE"]
-
-[badges.travis-ci]
-repository = "magiclen/s2tw"
-branch = "master"
 
 [profile.release]
 lto = true
