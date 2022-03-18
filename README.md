@@ -9,21 +9,21 @@ A simple tool for converting Simple Chinese to Traditional Chinese(TW).
 
 ```
 EXAMPLES:
-  s2tw                                # Convert each of input lines from Simple Chinese to Traditional Chinese
-  s2tw chs.txt cht.txt                # Convert chs.txt (in Simple Chinese) to cht.txt (in Traditional Chinese)
-  s2tw a.chs.txt                      # Convert a.chs.txt (in Simple Chinese) to a.cht.txt (in Traditional Chinese)
+s2tw                                # Convert each of input lines from Simple Chinese to Traditional Chinese
+s2tw chs.txt cht.txt                # Convert chs.txt (in Simple Chinese) to cht.txt (in Traditional Chinese)
+s2tw a.chs.txt                      # Convert a.chs.txt (in Simple Chinese) to a.cht.txt (in Traditional Chinese)
 
 USAGE:
-    s2tw [FLAGS] [ARGS]
-
-FLAGS:
-    -f, --force      Forces to output if the output file exists.
-    -h, --help       Prints help information
-    -V, --version    Prints version information
+    s2tw [OPTIONS] [ARGS]
 
 ARGS:
-    <S_PATH>     Assigns the path of your Simple Chinese document. It should be a file path.
-    <TW_PATH>    Assigns the path of your Traditional Chinese document. It should be a file path.
+    <S_PATH>     Assign the path of your Simple Chinese document. It should be a file path.
+    <TW_PATH>    Assign the path of your Traditional Chinese document. It should be a file path.
+
+OPTIONS:
+    -f, --force      Force to output if the output file exists.
+    -h, --help       Print help information
+    -V, --version    Print version information
 ```
 
 ## License

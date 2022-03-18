@@ -1,14 +1,3 @@
-#[macro_use]
-extern crate concat_with;
-extern crate clap;
-extern crate terminal_size;
-
-extern crate opencc_rust;
-
-extern crate path_absolutize;
-
-extern crate s2tw;
-
 use std::borrow::Cow;
 use std::env;
 use std::error::Error;
@@ -16,8 +5,10 @@ use std::fs::File;
 use std::io::{self, BufRead, BufReader, Write};
 use std::path::Path;
 
-use clap::{App, Arg};
+use clap::{Arg, Command};
 use terminal_size::terminal_size;
+
+use concat_with::concat_line;
 
 use opencc_rust::{generate_static_dictionary, DefaultConfig, OpenCC};
 
@@ -30,8 +21,8 @@ const CARGO_PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
 const CARGO_PKG_AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let matches = App::new(APP_NAME)
-        .set_term_width(terminal_size().map(|(width, _)| width.0 as usize).unwrap_or(0))
+    let matches = Command::new(APP_NAME)
+        .term_width(terminal_size().map(|(width, _)| width.0 as usize).unwrap_or(0))
         .version(CARGO_PKG_VERSION)
         .author(CARGO_PKG_AUTHORS)
         .about(concat!("A simple tool for converting Simple Chinese to Traditional Chinese(TW).\n\nEXAMPLES:\n", concat_line!(prefix "s2tw ",
@@ -39,18 +30,18 @@ fn main() -> Result<(), Box<dyn Error>> {
             "chs.txt cht.txt                # Convert chs.txt (in Simple Chinese) to cht.txt (in Traditional Chinese)",
             "a.chs.txt                      # Convert a.chs.txt (in Simple Chinese) to a.cht.txt (in Traditional Chinese)"
         )))
-        .arg(Arg::with_name("FORCE")
+        .arg(Arg::new("FORCE")
             .long("force")
-            .short("f")
-            .help("Forces to output if the output file exists.")
+            .short('f')
+            .help("Force to output if the output file exists.")
         )
-        .arg(Arg::with_name("S_PATH")
-            .help("Assigns the path of your Simple Chinese document. It should be a file path.")
+        .arg(Arg::new("S_PATH")
+            .help("Assign the path of your Simple Chinese document. It should be a file path.")
             .takes_value(true)
             .index(1)
         )
-        .arg(Arg::with_name("TW_PATH")
-            .help("Assigns the path of your Traditional Chinese document. It should be a file path.")
+        .arg(Arg::new("TW_PATH")
+            .help("Assign the path of your Traditional Chinese document. It should be a file path.")
             .takes_value(true)
             .index(2)
         )
