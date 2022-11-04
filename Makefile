@@ -2,7 +2,7 @@ EXECUTABLE_NAME := s2tw
 
 all: ./target/x86_64-unknown-linux-musl/release/$(EXECUTABLE_NAME)
 
-./target/x86_64-unknown-linux-musl/release/$(EXECUTABLE_NAME): $(shell find . -type f -iname '*.rs' -o -name 'Cargo.toml' | sed 's/ /\\ /g')
+./target/x86_64-unknown-linux-musl/release/$(EXECUTABLE_NAME): $(shell find . -type f -iname '*.rs' -o -name 'Cargo.toml' | grep -v ./target | sed 's/ /\\ /g')
 	PWD=$$(pwd)
 	cd $$OPENCC_PATH && bash build.sh
 	cd $$PWD

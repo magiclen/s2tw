@@ -1,6 +1,6 @@
 [package]
 name = "s2tw"
-version = "1.0.14"
+version = "1.0.15"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2021"
 repository = "https://github.com/magiclen/s2tw"
@@ -18,9 +18,9 @@ codegen-units = 1
 panic = "abort"
 
 [dependencies]
-clap = "3.1.6"
+clap = "3.2.23"
 concat-with = "0.2"
-terminal_size = "0.1"
+terminal_size = "0.2"
 
 [dependencies.path-absolutize]
 version = "3"
