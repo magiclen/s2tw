@@ -16,27 +16,27 @@ jobs:
         os:
           - ubuntu-latest
         toolchain:
+          - 1.59
           - stable
           - nightly
-    name: Test ${{ matrix.toolchain }} on ${{ matrix.os }}
+        features:
+          -
+    name: Test ${{ matrix.toolchain }} on ${{ matrix.os }} (${{ matrix.features }})
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install OpenCC
         run: |
           sudo apt update
           sudo apt install doxygen cmake wget
-          wget https://github.com/BYVoid/OpenCC/archive/refs/tags/ver.1.1.4.tar.gz
-          tar xf ver.1.1.4.tar.gz
+          wget https://github.com/BYVoid/OpenCC/archive/refs/tags/ver.1.1.6.tar.gz
+          tar xf ver.1.1.6.tar.gz
           cd OpenCC-*
           make -j$(nproc) PREFIX=/usr
           sudo make PREFIX=/usr install
       - run: sudo ldconfig
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v3
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          profile: minimal
           toolchain: ${{ matrix.toolchain }}
-          override: true
-      - run: cargo build --release
-      - run: cargo test --release
-      - run: cargo doc --release
+      - run: cargo test --release ${{ matrix.features }}
+      - run: cargo doc --release ${{ matrix.features }}
