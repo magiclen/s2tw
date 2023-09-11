@@ -1,9 +1,9 @@
 [package]
 name = "s2tw"
-version = "1.0.15"
+version = "1.0.16"
 authors = ["Magic Len <len@magiclen.org>"]
 edition = "2021"
-rust-version = "1.59"
+rust-version = "1.60"
 repository = "https://github.com/magiclen/s2tw"
 homepage = "https://magiclen.org/s2tw"
 keywords = ["chinese", "traditional", "simple", "conversion"]
