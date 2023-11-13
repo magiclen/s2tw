@@ -1,79 +1,36 @@
+mod cli;
+
 use std::{
-    borrow::Cow,
-    env,
-    error::Error,
+    env, fs,
     fs::File,
-    io::{self, BufRead, BufReader, Write},
-    path::Path,
+    io,
+    io::{BufRead, BufReader, Write},
 };
 
-use clap::{Arg, Command};
-use concat_with::concat_line;
+use anyhow::{anyhow, Context};
+use cli::*;
 use opencc_rust::{generate_static_dictionary, DefaultConfig, OpenCC};
-use path_absolutize::Absolutize;
-use s2tw::*;
-use terminal_size::terminal_size;
 
-const APP_NAME: &str = "s2tw";
-const CARGO_PKG_VERSION: &str = env!("CARGO_PKG_VERSION");
-const CARGO_PKG_AUTHORS: &str = env!("CARGO_PKG_AUTHORS");
-
-fn main() -> Result<(), Box<dyn Error>> {
-    let matches = Command::new(APP_NAME)
-        .term_width(terminal_size().map(|(width, _)| width.0 as usize).unwrap_or(0))
-        .version(CARGO_PKG_VERSION)
-        .author(CARGO_PKG_AUTHORS)
-        .about(concat!("A simple tool for converting Simple Chinese to Traditional Chinese(TW).\n\nEXAMPLES:\n", concat_line!(prefix "s2tw ",
-            "                               # Convert each of input lines from Simple Chinese to Traditional Chinese",
-            "chs.txt cht.txt                # Convert chs.txt (in Simple Chinese) to cht.txt (in Traditional Chinese)",
-            "a.chs.txt                      # Convert a.chs.txt (in Simple Chinese) to a.cht.txt (in Traditional Chinese)"
-        )))
-        .arg(Arg::new("FORCE")
-            .long("force")
-            .short('f')
-            .help("Force to output if the output file exists.")
-        )
-        .arg(Arg::new("S_PATH")
-            .help("Assign the path of your Simple Chinese document. It should be a file path.")
-            .takes_value(true)
-            .index(1)
-        )
-        .arg(Arg::new("TW_PATH")
-            .help("Assign the path of your Traditional Chinese document. It should be a file path.")
-            .takes_value(true)
-            .index(2)
-        )
-        .after_help("Enjoy it! https://magiclen.org")
-        .get_matches();
-
-    let s_path = matches.value_of("S_PATH");
-    let tw_path = matches.value_of("TW_PATH");
-
-    let force = matches.is_present("FORCE");
+fn main() -> anyhow::Result<()> {
+    let args = get_args();
 
     let temporary_path = env::temp_dir();
 
-    generate_static_dictionary(&temporary_path, DefaultConfig::S2TWP)?;
+    generate_static_dictionary(&temporary_path, DefaultConfig::S2TWP).unwrap();
 
-    let opencc = OpenCC::new(Path::join(&temporary_path, DefaultConfig::S2TWP))?;
+    let opencc = OpenCC::new(temporary_path.join(DefaultConfig::S2TWP)).unwrap();
     debug_assert_eq!("測試字串", opencc.convert("测试字符串"));
 
-    match s_path {
+    match args.s_path {
         Some(s_path) => {
-            let s_path = Path::new(s_path);
-
             if s_path.is_dir() {
-                return Err(format!(
-                    "`{}` is a directory!",
-                    s_path.absolutize()?.to_string_lossy()
-                )
-                .into());
+                return Err(anyhow!("{s_path:?} is a directory!"));
             }
 
-            let s_file = File::open(s_path)?;
+            let s_file = File::open(s_path.as_path()).with_context(|| anyhow!("{s_path:?}"))?;
 
-            let tw_path = match tw_path {
-                Some(tw_path) => Cow::from(Path::new(tw_path)),
+            let tw_path = match args.tw_path {
+                Some(tw_path) => tw_path,
                 None => {
                     let parent = s_path.parent().unwrap();
 
@@ -81,9 +38,9 @@ fn main() -> Result<(), Box<dyn Error>> {
                         Some(file_stem) => {
                             let file_stem = file_stem
                                 .to_str()
-                                .ok_or_else(|| String::from("Unsupported path."))?;
+                                .ok_or_else(|| anyhow!("{s_path:?} is an unsupported path."))?;
 
-                            file_stem.strip_suffix(".chs").unwrap_or(file_stem)
+                            file_stem.strip_suffix(".chs").unwrap_or(file_stem.as_ref())
                         },
                         None => "",
                     };
@@ -92,26 +49,31 @@ fn main() -> Result<(), Box<dyn Error>> {
 
                     let file_name = match s_path.extension() {
                         Some(extension) => {
-                            format!("{}.cht.{}", file_stem, extension.to_string_lossy())
+                            format!("{file_stem}.cht.{}", extension.to_string_lossy())
                         },
-                        None => format!("{}.cht", file_stem),
+                        None => format!("{file_stem}.cht"),
                     };
 
-                    let tw_path = Path::join(parent, file_name);
-
-                    Cow::from(tw_path)
+                    parent.join(file_name)
                 },
             };
 
-            if let Ok(metadata) = tw_path.metadata() {
-                if metadata.is_dir() || !force {
-                    return Err(
-                        format!("`{}` exists!", tw_path.absolutize()?.to_string_lossy()).into()
-                    );
-                }
+            match tw_path.metadata() {
+                Ok(metadata) => {
+                    if metadata.is_dir() {
+                        return Err(anyhow!("{tw_path:?} is a directory!"));
+                    } else if !args.force {
+                        return Err(anyhow!("{tw_path:?} exists!"));
+                    }
+                },
+                Err(error) if error.kind() == io::ErrorKind::NotFound => (),
+                Err(error) => {
+                    return Err(error).with_context(|| anyhow!("{tw_path:?}"));
+                },
             }
 
-            let mut tw_file = File::create(tw_path.as_ref())?;
+            let mut tw_file =
+                File::create(tw_path.as_path()).with_context(|| anyhow!("{tw_path:?}"))?;
 
             let mut s_file = BufReader::new(s_file);
 
@@ -120,27 +82,33 @@ fn main() -> Result<(), Box<dyn Error>> {
             loop {
                 line.clear();
 
-                let c = s_file.read_line(&mut line).map_err(|err| {
-                    try_delete(&tw_path);
-                    err
-                })?;
+                let c = s_file
+                    .read_line(&mut line)
+                    .map_err(|error| {
+                        let _ = fs::remove_file(tw_path.as_path());
+
+                        error
+                    })
+                    .with_context(|| anyhow!("{s_path:?}"))?;
 
                 if c == 0 {
                     break;
                 }
 
-                tw_file.write(&opencc.convert(&line[0..c]).into_bytes()).map_err(|err| {
-                    try_delete(&tw_path);
-                    err
+                tw_file.write(&opencc.convert(&line[0..c]).into_bytes()).map_err(|error| {
+                    let _ = fs::remove_file(tw_path.as_path());
+
+                    error
                 })?;
             }
         },
         None => {
             let mut line = String::new();
+
             loop {
                 line.clear();
 
-                let c = io::stdin().read_line(&mut line)?;
+                let c = io::stdin().read_line(&mut line).with_context(|| anyhow!("stdin"))?;
 
                 if c == 0 {
                     break;
