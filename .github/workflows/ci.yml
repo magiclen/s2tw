@@ -72,7 +72,7 @@ jobs:
         os:
           - ubuntu-latest
         toolchain:
-          - "1.70"
+          - "1.74"
         features:
           -
     name: Test ${{ matrix.toolchain }} on ${{ matrix.os }} (${{ matrix.features }})
