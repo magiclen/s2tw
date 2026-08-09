@@ -5,6 +5,10 @@ s2tw
 
 A simple tool for converting Simple Chinese to Traditional Chinese(TW).
 
+## Build
+
+The OpenCC library needs to be installed on your system. See [opencc-rust](https://github.com/magiclen/opencc-rust) for how to install it and how to configure the build.
+
 ## Help
 
 ```
